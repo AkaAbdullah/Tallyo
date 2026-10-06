@@ -64,3 +64,42 @@ export const clientSchema = z
   .transform((c) => ({ ...c, taxRate: c.taxMode === "rate" ? c.taxRate : 0 }));
 
 export type ClientInput = z.infer<typeof clientSchema>;
+
+const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a valid date");
+
+export const lineItemSchema = z.object({
+  title: z.string().trim().min(1, "Give each line item a title").max(200),
+  ref: z.string().trim().max(200).default(""),
+  bullets: z.array(z.string().trim().max(300)).max(20).default([]).transform((b) => b.filter(Boolean)),
+  qty: z.coerce.number().min(0, "Quantity can't be negative").max(1_000_000),
+  price: z.coerce.number().min(-1_000_000_000).max(1_000_000_000),
+});
+
+export const invoiceSchema = z.object({
+  clientId: z.string().default(""),
+  client: z.object({
+    name: z.string().trim().min(1, "Choose or enter a client").max(120),
+    address: z.string().trim().max(400).default(""),
+    country: z.string().max(2).default(""),
+    ids: z.array(labelValueSchema).max(20).default([]).transform((r) => r.filter((x) => x.label || x.value)),
+  }),
+  number: z.string().trim().max(40).default(""),
+  issueDate: isoDate,
+  termsDays: z.coerce.number().int().min(0).max(365),
+  currency: z.string().length(3),
+  project: z.string().trim().max(160).default(""),
+  serviceType: z.string().trim().max(120).default(""),
+  serviceFrom: z.union([z.literal(""), isoDate]).default(""),
+  serviceTo: z.union([z.literal(""), isoDate]).default(""),
+  serviceOngoing: z.boolean().default(false),
+  items: z.array(lineItemSchema).min(1, "Add at least one line item").max(100),
+  taxMode: z.enum(["reverse_charge", "none", "rate"]),
+  taxRate: z.coerce.number().min(0).max(100).default(0),
+  taxLabel: z.string().trim().max(20).default("VAT"),
+  noteTitle: z.string().trim().max(160).default(""),
+  noteBody: z.string().trim().max(800).default(""),
+  notes: z.string().trim().max(1000).default(""),
+  paymentReference: z.string().trim().max(80).default(""),
+});
+
+export type InvoiceInput = z.input<typeof invoiceSchema>;

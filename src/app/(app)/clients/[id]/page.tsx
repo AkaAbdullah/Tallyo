@@ -1,5 +1,7 @@
 import { isValidObjectId } from "mongoose";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { PageHeader } from "@/components/app/page-header";
 import { COUNTRIES, CURRENCIES_SORTED } from "@/lib/geo";
 import { ClientModel } from "@/models/client";
@@ -18,7 +20,10 @@ export default async function EditClientPage({ params }: PageProps<"/clients/[id
   return (
     <>
       <PageHeader title={client.name} description="Changes apply to new invoices. Invoices you have already created keep their details.">
-        <DeleteClientButton id={id} name={client.name} />
+        <div className="flex gap-2">
+          <DeleteClientButton id={id} name={client.name} />
+          <Link href={`/invoices/new?client=${id}`} className={buttonVariants({ size: "lg" })}>New invoice</Link>
+        </div>
       </PageHeader>
       <ClientForm client={clientDTO(client)} sellerCountry={business.country} defaultCurrency={business.defaultCurrency} countries={COUNTRIES} currencies={CURRENCIES_SORTED} />
     </>

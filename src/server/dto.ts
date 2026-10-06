@@ -1,6 +1,7 @@
 import "server-only";
 import type { Business } from "@/models/business";
 import type { Client } from "@/models/client";
+import type { Invoice } from "@/models/invoice";
 
 const rows = (list: { label?: string | null; value?: string | null }[] = []) =>
   list.map((r) => ({ label: r.label ?? "", value: r.value ?? "" }));
@@ -25,3 +26,17 @@ export function clientDTO(c: Client) {
   };
 }
 export type ClientDTO = ReturnType<typeof clientDTO>;
+
+export function invoiceDTO(i: Invoice) {
+  return {
+    id: String(i._id), number: i.number, status: i.status as "draft" | "sent" | "paid" | "void", clientId: i.clientId,
+    client: { name: i.client?.name ?? "", address: i.client?.address ?? "", country: i.client?.country ?? "", ids: rows(i.client?.ids) },
+    issueDate: i.issueDate, termsDays: i.termsDays, dueDate: i.dueDate, currency: i.currency, project: i.project,
+    serviceType: i.serviceType, serviceFrom: i.serviceFrom, serviceTo: i.serviceTo, serviceOngoing: i.serviceOngoing,
+    items: i.items.map((x) => ({ title: x.title, ref: x.ref, bullets: [...x.bullets], qty: x.qty, price: x.price })),
+    taxMode: i.taxMode as "reverse_charge" | "none" | "rate", taxRate: i.taxRate, taxLabel: i.taxLabel,
+    noteTitle: i.noteTitle, noteBody: i.noteBody, notes: i.notes, paymentReference: i.paymentReference,
+    total: i.total, amountPaid: i.amountPaid, paidAt: i.paidAt,
+  };
+}
+export type InvoiceDTO = ReturnType<typeof invoiceDTO>;

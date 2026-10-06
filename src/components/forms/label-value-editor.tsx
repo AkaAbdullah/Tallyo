@@ -9,22 +9,28 @@ type Row = { label: string; value: string };
 
 /** Editable list of label/value pairs (tax numbers, bank details, client IDs), submitted as JSON. */
 export function LabelValueEditor({
-  name, defaultValue, labelPlaceholder = "Label", valuePlaceholder = "Value", addLabel = "Add a row", suggestions = [],
+  name, defaultValue, onChange, labelPlaceholder = "Label", valuePlaceholder = "Value", addLabel = "Add a row", suggestions = [],
 }: {
-  name: string;
+  name?: string;
+  onChange?: (rows: Row[]) => void;
   defaultValue: Row[];
   labelPlaceholder?: string;
   valuePlaceholder?: string;
   addLabel?: string;
   suggestions?: string[];
 }) {
-  const [rows, setRows] = useState<Row[]>(defaultValue.length ? defaultValue : [{ label: "", value: "" }]);
+  const [rows, setRowsState] = useState<Row[]>(defaultValue.length ? defaultValue : [{ label: "", value: "" }]);
+  const setRows = (update: (r: Row[]) => Row[]) => {
+    const next = update(rows);
+    setRowsState(next);
+    onChange?.(next.filter((x) => x.label || x.value));
+  };
   const update = (i: number, patch: Partial<Row>) => setRows((r) => r.map((row, j) => (j === i ? { ...row, ...patch } : row)));
   const unused = suggestions.filter((s) => !rows.some((r) => r.label === s));
 
   return (
     <div className="grid gap-2">
-      <input type="hidden" name={name} value={JSON.stringify(rows)} />
+      {name && <input type="hidden" name={name} value={JSON.stringify(rows)} />}
       {rows.map((row, i) => (
         <div key={i} className="grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] gap-2">
           <Input aria-label={`${labelPlaceholder} ${i + 1}`} placeholder={labelPlaceholder} value={row.label} onChange={(e) => update(i, { label: e.target.value })} />
