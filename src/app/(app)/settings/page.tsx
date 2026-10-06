@@ -1,12 +1,17 @@
 import { PageHeader } from "@/components/app/page-header";
+import { COUNTRIES, CURRENCIES_SORTED } from "@/lib/geo";
+import { businessDTO } from "@/server/dto";
+import { requireWorkspace } from "@/server/session";
+import { SettingsForm } from "./settings-form";
 
 export const metadata = { title: "Settings" };
 
-export default function Page() {
+export default async function SettingsPage() {
+  const { business } = await requireWorkspace();
   return (
     <>
-      <PageHeader title="Settings" description="Your business details, branding and invoice defaults." />
-      <div className="rounded-xl border border-dashed p-10 text-center text-sm text-muted-foreground">Coming in the next step.</div>
+      <PageHeader title="Business settings" description="These details appear on every invoice from this workspace." />
+      <SettingsForm key={String(business.updatedAt)} business={businessDTO(business)} countries={COUNTRIES} currencies={CURRENCIES_SORTED} />
     </>
   );
 }

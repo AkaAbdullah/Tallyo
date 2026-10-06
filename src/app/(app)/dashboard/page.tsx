@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Circle } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
+import { ClientModel } from "@/models/client";
 import { requireWorkspace } from "@/server/session";
 
 export const metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
-  const { user, business } = await requireWorkspace();
+  const { user, workspace, business } = await requireWorkspace();
+  const clientCount = await ClientModel.countDocuments({ organizationId: workspace.id });
   const steps = [
     { done: true, title: "Create your workspace", href: "/settings" },
     {
@@ -14,7 +16,7 @@ export default async function DashboardPage() {
       title: "Add your address, tax numbers and bank details",
       href: "/settings",
     },
-    { done: false, title: "Add your first client", href: "/clients" },
+    { done: clientCount > 0, title: "Add your first client", href: clientCount ? "/clients" : "/clients/new" },
     { done: false, title: "Create your first invoice", href: "/invoices" },
   ];
 

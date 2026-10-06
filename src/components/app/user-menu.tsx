@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme";
 import { LogOut, Moon, Sun } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {

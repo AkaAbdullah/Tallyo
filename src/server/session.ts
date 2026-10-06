@@ -30,3 +30,17 @@ export const requireWorkspace = cache(async () => {
 
   return { session, user: session.user, workspace, workspaces, business };
 });
+
+/** Owners and admins can change workspace settings; members can create invoices and clients. */
+export async function requireWorkspaceAdmin() {
+  const ctx = await requireWorkspace();
+  const { members } = await auth.api.listMembers({
+    query: { organizationId: ctx.workspace.id },
+    headers: await headers(),
+  });
+  const role = members.find((m) => m.userId === ctx.user.id)?.role ?? "";
+  if (!role.split(",").some((r) => r === "owner" || r === "admin")) {
+    throw new Error("Only workspace owners and admins can change these settings.");
+  }
+  return ctx;
+}

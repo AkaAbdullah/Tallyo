@@ -2,9 +2,24 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode: an explicit "dark" class, or the system preference unless the user picked "light". */
+@custom-variant dark {
+  &:where(.dark, .dark *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not(.light), :root:not(.light) *) {
+      @slot;
+    }
+  }
+}
 
 @theme inline {
+  --color-carbon: var(--carbon);
+  --color-canary: var(--canary);
+  --color-blush: var(--blush);
+  --color-graphite: var(--graphite);
+  --color-rule: var(--rule);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -49,72 +64,130 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.46 0.2 268);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.62 0.17 268);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Tallyo: duplicate invoice book. Paper, graphite, carbon-copy blue, canary and pink copies. */
+  --paper: #ffffff;
+  --graphite: #1e2026;
+  --carbon: #3341a6;
+  --canary: #fcefa4;
+  --blush: #f6cfd8;
+  --rule: #dadde4;
+
+  --background: var(--paper);
+  --foreground: var(--graphite);
+  --card: var(--paper);
+  --card-foreground: var(--graphite);
+  --popover: var(--paper);
+  --popover-foreground: var(--graphite);
+  --primary: var(--carbon);
+  --primary-foreground: #ffffff;
+  --secondary: #f1f2f5;
+  --secondary-foreground: var(--graphite);
+  --muted: #f4f5f7;
+  --muted-foreground: #5d6270;
+  --accent: #eef0fa;
+  --accent-foreground: var(--carbon);
+  --destructive: #c2362b;
+  --border: var(--rule);
+  --input: #cfd3db;
+  --ring: #6d79c9;
+  --chart-1: var(--carbon);
+  --chart-2: #8a93d4;
+  --chart-3: #e3b341;
+  --chart-4: #d98aa0;
+  --chart-5: #5d6270;
+  --radius: 0.5rem;
+  --sidebar: #f7f8fa;
+  --sidebar-foreground: var(--graphite);
+  --sidebar-primary: var(--carbon);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eef0fa;
+  --sidebar-accent-foreground: var(--carbon);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: #6d79c9;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.15 268);
-  --primary-foreground: oklch(0.16 0.03 268);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --paper: #17181d;
+  --graphite: #e9eaee;
+  --carbon: #9aa4f0;
+  --canary: #5a5222;
+  --blush: #5a3640;
+  --rule: #2c2e36;
+
+  --background: var(--paper);
+  --foreground: var(--graphite);
+  --card: #1c1d23;
+  --card-foreground: var(--graphite);
+  --popover: #1f2027;
+  --popover-foreground: var(--graphite);
+  --primary: var(--carbon);
+  --primary-foreground: #14162b;
+  --secondary: #24262d;
+  --secondary-foreground: var(--graphite);
+  --muted: #22242b;
+  --muted-foreground: #9b9fab;
+  --accent: #262a45;
+  --accent-foreground: var(--carbon);
+  --destructive: #ef6b5f;
+  --border: var(--rule);
+  --input: #34363f;
+  --ring: #7d88dc;
+  --chart-1: var(--carbon);
+  --chart-2: #6c76c4;
+  --chart-3: #d9b04a;
+  --chart-4: #c97b92;
+  --chart-5: #9b9fab;
+  --sidebar: #1b1c21;
+  --sidebar-foreground: var(--graphite);
+  --sidebar-primary: var(--carbon);
+  --sidebar-primary-foreground: #14162b;
+  --sidebar-accent: #262a45;
+  --sidebar-accent-foreground: var(--carbon);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: #7d88dc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --paper: #17181d;
+    --graphite: #e9eaee;
+    --carbon: #9aa4f0;
+    --canary: #5a5222;
+    --blush: #5a3640;
+    --rule: #2c2e36;
+  
+    --background: var(--paper);
+    --foreground: var(--graphite);
+    --card: #1c1d23;
+    --card-foreground: var(--graphite);
+    --popover: #1f2027;
+    --popover-foreground: var(--graphite);
+    --primary: var(--carbon);
+    --primary-foreground: #14162b;
+    --secondary: #24262d;
+    --secondary-foreground: var(--graphite);
+    --muted: #22242b;
+    --muted-foreground: #9b9fab;
+    --accent: #262a45;
+    --accent-foreground: var(--carbon);
+    --destructive: #ef6b5f;
+    --border: var(--rule);
+    --input: #34363f;
+    --ring: #7d88dc;
+    --chart-1: var(--carbon);
+    --chart-2: #6c76c4;
+    --chart-3: #d9b04a;
+    --chart-4: #c97b92;
+    --chart-5: #9b9fab;
+    --sidebar: #1b1c21;
+    --sidebar-foreground: var(--graphite);
+    --sidebar-primary: var(--carbon);
+    --sidebar-primary-foreground: #14162b;
+    --sidebar-accent: #262a45;
+    --sidebar-accent-foreground: var(--carbon);
+    --sidebar-border: var(--rule);
+    --sidebar-ring: #7d88dc;
+  }
 }
 
 @layer base {
@@ -127,4 +200,16 @@
   html {
     @apply font-sans;
   }
+  /* Schibsted's tabular figures space out "." and ","; lining proportional figures read better for money. */
+  .tabular {
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
 }
+/* Hero: the duplicate copies fan out once on load. */
+@keyframes copy-fan-1 { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(14px, 16px) rotate(1.6deg); } }
+@keyframes copy-fan-2 { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(28px, 30px) rotate(3.2deg); } }
+.copy-1 { animation: copy-fan-1 700ms cubic-bezier(.2,.7,.2,1) 250ms both; }
+.copy-2 { animation: copy-fan-2 800ms cubic-bezier(.2,.7,.2,1) 250ms both; }

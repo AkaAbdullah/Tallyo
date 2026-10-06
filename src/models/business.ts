@@ -16,7 +16,7 @@ const businessSchema = new Schema(
     phone: { type: String, default: "" },
     website: { type: String, default: "" },
     logo: { type: String, default: "" }, // data URL, kept small (validated on upload)
-    brandColor: { type: String, default: "#0a66ff" },
+    brandColor: { type: String, default: "#3341a6" },
     taxIds: { type: [labelValue], default: [] },
     bankDetails: { type: [labelValue], default: [] },
     footerText: { type: String, default: "" },
