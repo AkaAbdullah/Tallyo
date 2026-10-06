@@ -20,8 +20,16 @@ const socialProviders = {
 
 export const enabledSocialProviders = Object.keys(socialProviders) as ("github" | "google")[];
 
+// BETTER_AUTH_URL wins; otherwise use the address the host gave us at build time.
+const baseURL = process.env.BETTER_AUTH_URL || process.env.TALLYO_HOST_URL || undefined;
+const trustedOrigins = [baseURL, process.env.TALLYO_PREVIEW_URL]
+  .filter((u): u is string => Boolean(u))
+  .map((u) => new URL(u).origin);
+
 export const auth = betterAuth({
   appName: "Tallyo",
+  baseURL,
+  trustedOrigins,
   database: mongodbAdapter(client.db(), { client }),
   emailAndPassword: { enabled: true, minPasswordLength: 8 },
   socialProviders,
