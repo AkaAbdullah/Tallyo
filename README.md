@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tallyo
 
-## Getting Started
+Open-source invoicing for freelancers and small businesses, with AI that does the busywork.
 
-First, run the development server:
+> **Status:** early development. Accounts, workspaces and onboarding work; invoices, clients and PDFs are in progress.
+
+## Features
+
+- **Your own business**: company details, logo, tax numbers and bank details. Nothing is hard-coded.
+- **Workspaces and teams**: run several businesses from one account and switch between them.
+- **Invoices** *(in progress)*: live preview, auto-numbering, any currency, reverse-charge and export notes, PDF download.
+- **AI helpers** *(planned, via Groq)*: turn a client's message into a client record, draft line items from a description, and tidy up wording.
+
+## Tech stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind CSS 4 · shadcn/ui · MongoDB + Mongoose · Better Auth · Zod
+
+## Getting started
+
+Requirements: Node.js 20.9+ and pnpm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local   # then fill in BETTER_AUTH_SECRET
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Database:** leave `MONGODB_URI` empty in development and Tallyo starts a throwaway in-memory MongoDB (data resets on restart). To keep data, set `MONGODB_URI` to any MongoDB connection string. A free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster works well. Production requires `MONGODB_URI`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment variables
 
-## Learn More
+| Variable | Required | Description |
+| --- | --- | --- |
+| `MONGODB_URI` | Production | MongoDB connection string |
+| `BETTER_AUTH_SECRET` | Yes | Long random string, e.g. `openssl rand -base64 32` |
+| `BETTER_AUTH_URL` | Yes | The URL the app is served from |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | No | Enables "Continue with GitHub" |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No | Enables "Continue with Google" |
+| `GROQ_API_KEY` | No | Enables the AI features |
 
-To learn more about Next.js, take a look at the following resources:
+## License
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+[MIT](LICENSE)
