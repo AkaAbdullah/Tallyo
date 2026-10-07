@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 !.env.example
+
+# AI assistant files
+CLAUDE.md
+AGENTS.md
+.claude/
+.remember/
