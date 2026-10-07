@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest something Tallyo should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the situation, not the solution. For example "My clients in Canada need GST and QST on separate lines."
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could Tallyo help?
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contributing
+      options:
+        - label: I'd like to work on this myself

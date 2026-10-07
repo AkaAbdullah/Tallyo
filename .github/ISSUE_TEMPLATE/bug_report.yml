@@ -1,0 +1,38 @@
+name: Bug report
+description: Something doesn't work the way it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to Invoices → New invoice
+        2. Pick a client from Germany
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where are you running Tallyo?
+      options:
+        - The hosted site (tallyo-dev.netlify.app)
+        - Self-hosted on Netlify
+        - Self-hosted on Vercel
+        - Self-hosted elsewhere
+        - Locally with pnpm dev
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Browser, screenshots, or the invoice template you used. Please remove any real client or bank details.

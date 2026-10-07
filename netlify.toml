@@ -1,0 +1,6 @@
+# Used by the "Deploy to Netlify" button: Netlify asks for these values when someone deploys their own copy.
+# The build settings themselves are detected automatically for Next.js.
+[template.environment]
+  MONGODB_URI = "MongoDB connection string, e.g. from a free MongoDB Atlas cluster"
+  BETTER_AUTH_SECRET = "A long random string (run: openssl rand -base64 32)"
+  GROQ_API_KEY = "Optional: enables the AI helpers (console.groq.com/keys)"

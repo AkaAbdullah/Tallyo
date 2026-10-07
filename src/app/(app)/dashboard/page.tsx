@@ -2,11 +2,13 @@ import Link from "next/link";
 import { CheckCircle2, Circle } from "lucide-react";
 import { PageHeader } from "@/components/app/page-header";
 import { StatusBadge } from "@/components/invoice/status-badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { FlashToast } from "@/components/app/flash-toast";
 import { formatDate, formatMoney, todayISO } from "@/lib/money";
 import { ClientModel } from "@/models/client";
 import { InvoiceModel } from "@/models/invoice";
 import { displayStatus, invoiceStats } from "@/server/invoice-queries";
+import { loadSampleData } from "@/server/demo";
 import { requireWorkspace } from "@/server/session";
 
 export const metadata = { title: "Dashboard" };
@@ -16,7 +18,8 @@ function Amounts({ list, empty }: { list: { currency: string; amount: number }[]
   return <span className="grid">{list.map((x) => <span key={x.currency}>{formatMoney(x.amount, x.currency)}</span>)}</span>;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
+  const { sample } = (await searchParams) as { sample?: string };
   const { user, workspace, business } = await requireWorkspace();
   const [clientCount, invoiceCount, recent, stats] = await Promise.all([
     ClientModel.countDocuments({ organizationId: workspace.id }),
@@ -37,6 +40,19 @@ export default async function DashboardPage() {
       <PageHeader title={`Welcome, ${user.name.split(" ")[0]}`} description={business.name}>
         <Link href="/invoices/new" className={buttonVariants({ size: "lg" })}>New invoice</Link>
       </PageHeader>
+
+      <FlashToast message={sample ? "Sample clients and invoices added. Delete them whenever you like." : undefined} />
+      {invoiceCount === 0 && (
+        <section className="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-rule p-5">
+          <div>
+            <h2 className="font-semibold">Just looking around?</h2>
+            <p className="text-sm text-muted-foreground">Add three sample clients and four invoices to see how everything fits together.</p>
+          </div>
+          <form action={loadSampleData}>
+            <Button type="submit" variant="outline" size="lg">Add sample data</Button>
+          </form>
+        </section>
+      )}
 
       {!setupDone && (
         <section className="mb-8 rounded-xl border border-rule p-5">

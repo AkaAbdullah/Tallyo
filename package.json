@@ -1,13 +1,21 @@
 {
   "name": "tallyo",
   "version": "0.1.0",
+  "description": "Open-source invoicing for freelancers and small businesses, with optional AI.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AkaAbdullah/Tallyo.git"
+  },
+  "homepage": "https://tallyo-dev.netlify.app",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "templates:render": "esbuild scripts/render-templates.mts --bundle --platform=node --format=esm --jsx=automatic --packages=external --log-level=warning --outfile=node_modules/.cache/tallyo/render-templates.mjs && node node_modules/.cache/tallyo/render-templates.mjs"
+    "templates:render": "esbuild scripts/render-templates.mts --bundle --platform=node --format=esm --jsx=automatic --packages=external --log-level=warning --outfile=node_modules/.cache/tallyo/render-templates.mjs && node node_modules/.cache/tallyo/render-templates.mjs",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.55",
