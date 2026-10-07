@@ -27,11 +27,15 @@ const businessSchema = new Schema(
     defaultTermsDays: { type: Number, default: 14, min: 0 },
     defaultNotes: { type: String, default: "Thank you for your business." },
     locale: { type: String, default: "en" },
+    invoiceTemplate: { type: String, enum: ["classic", "minimal", "bold", "compact"], default: "classic" },
   },
   { timestamps: true },
 );
 
 export type Business = InferSchemaType<typeof businessSchema> & { _id: mongoose.Types.ObjectId };
+
+// In development, hot reloads would otherwise keep a stale model that silently drops new fields.
+if (process.env.NODE_ENV !== "production" && mongoose.models.Business) mongoose.deleteModel("Business");
 
 export const BusinessModel: Model<Business> =
   (mongoose.models.Business as Model<Business>) ?? mongoose.model<Business>("Business", businessSchema);

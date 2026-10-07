@@ -44,6 +44,7 @@ export const businessSchema = z.object({
   defaultCurrency: z.string().length(3),
   defaultTermsDays: z.coerce.number().int().min(0).max(365),
   defaultNotes: optional(500),
+  invoiceTemplate: z.enum(["classic", "minimal", "bold", "compact"]).default("classic"),
 });
 
 export const clientSchema = z
@@ -100,6 +101,7 @@ export const invoiceSchema = z.object({
   noteBody: z.string().trim().max(800).default(""),
   notes: z.string().trim().max(1000).default(""),
   paymentReference: z.string().trim().max(80).default(""),
+  template: z.enum(["", "classic", "minimal", "bold", "compact"]).default(""),
 });
 
 export type InvoiceInput = z.input<typeof invoiceSchema>;

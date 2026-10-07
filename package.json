@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "templates:render": "esbuild scripts/render-templates.mts --bundle --platform=node --format=esm --jsx=automatic --packages=external --log-level=warning --outfile=node_modules/.cache/tallyo/render-templates.mjs && node node_modules/.cache/tallyo/render-templates.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@better-auth/infra": "^0.4.14",
+    "@react-pdf/renderer": "^4.9.0",
     "better-auth": "^1.7.7",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
@@ -31,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "mongodb-memory-server": "^11.3.0",

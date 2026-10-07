@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Field, FormSection } from "@/components/forms/field";
 import { LabelValueEditor } from "@/components/forms/label-value-editor";
 import { LogoInput } from "@/components/forms/logo-input";
+import { TemplatePicker } from "@/components/forms/template-picker";
 import { NativeSelect } from "@/components/native-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -102,6 +103,10 @@ export function SettingsForm({ business: b, countries, currencies }: { business:
           addLabel="Add a detail"
           suggestions={["Account name", "Bank", "IBAN", "SWIFT / BIC"]}
         />
+      </FormSection>
+
+      <FormSection title="Invoice design" description="The template used for new invoices and PDFs. You can pick a different one on any invoice.">
+        <TemplatePicker name="invoiceTemplate" defaultValue={b.invoiceTemplate} />
       </FormSection>
 
       <FormSection title="Invoice numbers" description="Each new invoice takes the next number automatically.">

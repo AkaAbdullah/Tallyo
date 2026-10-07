@@ -26,5 +26,8 @@ clientSchema.index({ organizationId: 1, name: 1 });
 
 export type Client = InferSchemaType<typeof clientSchema> & { _id: mongoose.Types.ObjectId };
 
+// In development, hot reloads would otherwise keep a stale model that silently drops new fields.
+if (process.env.NODE_ENV !== "production" && mongoose.models.Client) mongoose.deleteModel("Client");
+
 export const ClientModel: Model<Client> =
   (mongoose.models.Client as Model<Client>) ?? mongoose.model<Client>("Client", clientSchema);

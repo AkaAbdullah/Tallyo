@@ -2,6 +2,7 @@ import "server-only";
 import type { Business } from "@/models/business";
 import type { Client } from "@/models/client";
 import type { Invoice } from "@/models/invoice";
+import type { TemplateId } from "@/pdf/registry";
 
 const rows = (list: { label?: string | null; value?: string | null }[] = []) =>
   list.map((r) => ({ label: r.label ?? "", value: r.value ?? "" }));
@@ -14,6 +15,7 @@ export function businessDTO(b: Business) {
     taxIds: rows(b.taxIds), bankDetails: rows(b.bankDetails), footerText: b.footerText, invoicePrefix: b.invoicePrefix,
     numberDigits: b.numberDigits, nextNumber: b.nextNumber, defaultCurrency: b.defaultCurrency,
     defaultTermsDays: b.defaultTermsDays, defaultNotes: b.defaultNotes,
+    invoiceTemplate: (b.invoiceTemplate ?? "classic") as TemplateId,
   };
 }
 export type BusinessDTO = ReturnType<typeof businessDTO>;
@@ -37,6 +39,7 @@ export function invoiceDTO(i: Invoice) {
     taxMode: i.taxMode as "reverse_charge" | "none" | "rate", taxRate: i.taxRate, taxLabel: i.taxLabel,
     noteTitle: i.noteTitle, noteBody: i.noteBody, notes: i.notes, paymentReference: i.paymentReference,
     total: i.total, amountPaid: i.amountPaid, paidAt: i.paidAt,
+    template: (i.template ?? "") as TemplateId | "",
   };
 }
 export type InvoiceDTO = ReturnType<typeof invoiceDTO>;

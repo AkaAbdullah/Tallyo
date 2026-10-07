@@ -46,6 +46,8 @@ const invoiceSchema = new Schema(
     noteBody: { type: String, default: "" },
     notes: { type: String, default: "" },
     paymentReference: { type: String, default: "" },
+    // "" follows the workspace default template.
+    template: { type: String, enum: ["", "classic", "minimal", "bold", "compact"], default: "" },
     // Cached totals so lists and dashboards can sum without recomputing every invoice.
     subtotal: { type: Number, default: 0 },
     taxAmount: { type: Number, default: 0 },
@@ -63,6 +65,9 @@ invoiceSchema.index({ organizationId: 1, issueDate: -1 });
 
 export type Invoice = InferSchemaType<typeof invoiceSchema> & { _id: mongoose.Types.ObjectId };
 export type InvoiceStatus = "draft" | "sent" | "paid" | "void";
+
+// In development, hot reloads would otherwise keep a stale model that silently drops new fields.
+if (process.env.NODE_ENV !== "production" && mongoose.models.Invoice) mongoose.deleteModel("Invoice");
 
 export const InvoiceModel: Model<Invoice> =
   (mongoose.models.Invoice as Model<Invoice>) ?? mongoose.model<Invoice>("Invoice", invoiceSchema);

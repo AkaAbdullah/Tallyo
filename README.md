@@ -4,14 +4,15 @@ Open-source invoicing for freelancers and small businesses, with AI that does th
 
 **Live site:** [tallyo-dev.netlify.app](https://tallyo-dev.netlify.app)
 
-> **Status:** early development. Accounts, workspaces, business settings, clients and invoices work. PDF download, invoice templates and the AI helpers are next.
+> **Status:** early development. Accounts, workspaces, business settings, clients, invoices, PDF download and invoice templates work. The AI helpers are next.
 
 ## Features
 
 - **Your own business**: company details, logo, tax numbers and bank details. Nothing is hard-coded.
 - **Workspaces and teams**: run several businesses from one account and switch between them.
 - **Clients**: saved addresses, VAT numbers, currency and a tax treatment suggested from their country.
-- **Invoices**: live preview, auto-numbering, any currency, reverse-charge and export notes, partial payments, overdue tracking. PDF download and templates are coming next.
+- **Invoices**: auto-numbering, any currency, reverse-charge and export notes, partial payments, overdue tracking.
+- **PDFs and templates**: four templates (Classic, Minimal, Bold, Compact) with your logo and brand colour. The live preview is the actual PDF, generated in the browser.
 - **AI helpers** *(planned, via Groq)*: turn a client's message into a client record, draft line items from a description, and tidy up wording.
 
 ## Tech stack
@@ -42,6 +43,16 @@ Open http://localhost:3000.
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | No | Enables "Continue with GitHub" |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No | Enables "Continue with Google" |
 | `GROQ_API_KEY` | No | Enables the AI features |
+
+## Adding an invoice template
+
+Templates live in `src/pdf/templates/` and are built with [`@react-pdf/renderer`](https://react-pdf.org). Each one receives the same prepared data (`src/pdf/prepare.ts`), so totals and labels always match.
+
+1. Copy an existing template, register it in `src/pdf/registry.ts` and `src/pdf/index.tsx`, and add it to the `invoiceTemplate` enums in the models and schemas.
+2. Render it with sample data: `pnpm templates:render /tmp/templates` writes one PDF per template.
+3. Make its thumbnail: `pdftoppm -png -r 72 -singlefile /tmp/templates/<id>.pdf public/templates/<id>`.
+
+Two react-pdf quirks to keep in mind: set `lineHeight` on a wrapper `View` together with a `fontSize`, never on `<Page>` (it breaks page numbers), and give large text its own `lineHeight`.
 
 ## Credits, and an honest confession
 

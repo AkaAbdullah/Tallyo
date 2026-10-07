@@ -2,8 +2,7 @@ import Link from "next/link";
 import { isValidObjectId } from "mongoose";
 import { notFound } from "next/navigation";
 import { FlashToast } from "@/components/app/flash-toast";
-import { InvoiceDocument } from "@/components/invoice/invoice-document";
-import { InvoicePaper } from "@/components/invoice/invoice-paper";
+import { DownloadPdfButton, PdfPreview } from "@/components/invoice/pdf-preview";
 import { StatusBadge } from "@/components/invoice/status-badge";
 import { computeTotals, formatDate, formatMoney } from "@/lib/money";
 import { InvoiceModel } from "@/models/invoice";
@@ -32,6 +31,8 @@ export default async function InvoicePage({ params, searchParams }: PageProps<"/
   const inv = invoiceDTO(data.invoice);
   const status = displayStatus(data.invoice);
   const t = computeTotals(inv.items, inv, inv.amountPaid);
+  const business = businessDTO(data.business);
+  const template = inv.template || business.invoiceTemplate;
 
   const facts: [string, React.ReactNode][] = [
     ["Client", inv.clientId ? <Link href={`/clients/${inv.clientId}`} className="text-primary underline-offset-4 hover:underline">{inv.client.name}</Link> : inv.client.name],
@@ -54,13 +55,14 @@ export default async function InvoicePage({ params, searchParams }: PageProps<"/
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{inv.client.name}{inv.project && `, ${inv.project}`}</p>
         </div>
-        <InvoiceToolbar id={inv.id} number={inv.number} status={inv.status} balance={t.balance} currency={inv.currency} />
+        <div className="flex flex-wrap items-center gap-2">
+          <DownloadPdfButton business={business} invoice={inv} template={template} variant={inv.status === "draft" ? "outline" : "default"} />
+          <InvoiceToolbar id={inv.id} number={inv.number} status={inv.status} balance={t.balance} currency={inv.currency} />
+        </div>
       </div>
 
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <InvoicePaper>
-          <InvoiceDocument business={businessDTO(data.business)} invoice={inv} />
-        </InvoicePaper>
+        <PdfPreview business={business} invoice={inv} template={template} delay={0} />
         <aside className="grid gap-6 lg:sticky lg:top-6">
           <div className="rounded-xl border border-rule p-5">
             <p className="text-sm text-muted-foreground">{status === "paid" ? "Paid in full" : "Balance due"}</p>

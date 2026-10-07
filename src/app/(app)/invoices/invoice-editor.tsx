@@ -6,14 +6,15 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Field } from "@/components/forms/field";
 import { LabelValueEditor } from "@/components/forms/label-value-editor";
-import { InvoiceDocument, type DocBusiness } from "@/components/invoice/invoice-document";
-import { InvoicePaper } from "@/components/invoice/invoice-paper";
+import { PdfPreview } from "@/components/invoice/pdf-preview";
 import { NativeSelect } from "@/components/native-select";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { addDays, computeTotals, formatDate, formatMoney, lineAmount } from "@/lib/money";
 import { notePreset, TAX_MODES, type TaxMode } from "@/lib/tax";
+import { TEMPLATES, type TemplateId } from "@/pdf/registry";
+import type { DocBusiness } from "@/pdf/types";
 import type { ClientDTO, InvoiceDTO } from "@/server/dto";
 import { saveInvoice } from "@/server/invoices";
 
@@ -55,7 +56,7 @@ export function InvoiceEditor({
   invoice, business, clients, defaults, currencies, preselectClientId,
 }: {
   invoice?: InvoiceDTO;
-  business: DocBusiness & { country: string };
+  business: DocBusiness & { country: string; invoiceTemplate: TemplateId };
   clients: ClientDTO[];
   defaults: EditorDefaults;
   currencies: Option[];
@@ -88,6 +89,8 @@ export function InvoiceEditor({
   });
   const [notes, setNotes] = useState(invoice?.notes ?? defaults.notes);
   const [paymentReference, setPaymentReference] = useState(invoice?.paymentReference ?? "");
+  const [template, setTemplate] = useState<TemplateId | "">(invoice?.template ?? "");
+  const effectiveTemplate = template || business.invoiceTemplate;
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
 
@@ -121,7 +124,7 @@ export function InvoiceEditor({
         {
           clientId, client, number, issueDate, termsDays: Number(termsDays) || 0, currency, project, serviceType,
           serviceFrom, serviceTo, serviceOngoing, items: lineItems, taxMode: tax.taxMode, taxRate: Number(tax.taxRate) || 0,
-          taxLabel: tax.taxLabel, noteTitle: tax.noteTitle, noteBody: tax.noteBody, notes, paymentReference,
+          taxLabel: tax.taxLabel, noteTitle: tax.noteTitle, noteBody: tax.noteBody, notes, paymentReference, template,
         },
         intent,
       );
@@ -307,11 +310,18 @@ export function InvoiceEditor({
         </div>
       </div>
 
-      <aside className="hidden xl:sticky xl:top-6 xl:block" aria-label="Invoice preview">
-        <p className="mb-2 text-sm text-muted-foreground">Preview</p>
-        <InvoicePaper>
-          <InvoiceDocument business={business} invoice={docInvoice} />
-        </InvoicePaper>
+      <aside className="xl:sticky xl:top-6" aria-label="Invoice preview">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">Preview of the PDF</p>
+          <label className="flex items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Template</span>
+            <NativeSelect value={template} onChange={(e) => setTemplate(e.target.value as TemplateId | "")} className="w-auto">
+              <option value="">Workspace default ({TEMPLATES.find((t) => t.id === business.invoiceTemplate)?.name})</option>
+              {TEMPLATES.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </NativeSelect>
+          </label>
+        </div>
+        <PdfPreview business={business} invoice={docInvoice} template={effectiveTemplate} />
       </aside>
     </div>
   );
