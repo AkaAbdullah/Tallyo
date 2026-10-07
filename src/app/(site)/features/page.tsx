@@ -1,8 +1,15 @@
 import Link from "next/link";
+import { breadcrumbs, JsonLd } from "@/components/site/json-ld";
 import { PageIntro } from "@/components/site/page-intro";
 import { buttonVariants } from "@/components/ui/button";
+import { pageMetadata } from "@/lib/site";
 
-export const metadata = { title: "Features" };
+export const metadata = pageMetadata({
+  title: "Invoicing features for freelancers",
+  description:
+    "Live PDF previews, automatic invoice numbers, any currency, reverse-charge tax notes, partial payments, saved clients, team workspaces and optional AI.",
+  path: "/features",
+});
 
 const groups: { title: string; summary: string; items: [string, string][] }[] = [
   {
@@ -52,7 +59,8 @@ const groups: { title: string; summary: string; items: [string, string][] }[] = 
 export default function FeaturesPage() {
   return (
     <>
-      <PageIntro title="What Tallyo does">
+      <JsonLd data={breadcrumbs([["Features", "/features"]])} />
+      <PageIntro title="Invoicing features for freelancers and small studios">
         Tallyo is for people who bill clients directly: freelancers, small studios and consultants, including those
         working across borders.
       </PageIntro>

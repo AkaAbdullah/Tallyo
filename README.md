@@ -71,6 +71,7 @@ Before going live:
 | `MONGODB_URI` | In production | MongoDB connection string. Include a database name, e.g. `…mongodb.net/tallyo` |
 | `BETTER_AUTH_SECRET` | Yes | Long random string, e.g. `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | On other hosts | Public address, with `https://` and no trailing slash |
+| `NEXT_PUBLIC_SITE_URL` | With a custom domain | Your public address, used for canonical URLs, the sitemap and share images |
 | `GROQ_API_KEY` | No | Turns on the AI helpers ([get a key](https://console.groq.com/keys)) |
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | No | Adds "Continue with GitHub" |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No | Adds "Continue with Google" |

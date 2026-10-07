@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { InvoiceStack } from "@/components/site/invoice-stack";
+import { faqPage, JsonLd, organization, softwareApplication, website } from "@/components/site/json-ld";
 import { buttonVariants } from "@/components/ui/button";
-import { GITHUB_URL } from "@/lib/site";
+import { GITHUB_URL, pageMetadata, SITE_DESCRIPTION } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const steps = [
@@ -26,9 +27,26 @@ const borderFacts = [
   ["Bank details that fit", "IBAN, SWIFT, account title or a payment link. Whatever your clients need to pay you."],
 ];
 
+const faqs = [
+  ["Is Tallyo really free?", "Yes. Invoices, clients, PDF downloads, templates and team members are all free, with no trial period. The code is open source under the MIT license, so you can also run it on your own server."],
+  ["Can I add a reverse charge note for EU business clients?", "Yes. Choose reverse charge for a client and Tallyo prints a 0% VAT line and the note your client's accountant expects, including the German § 13b UStG wording for clients in Germany. You can edit every note."],
+  ["Which currencies can I invoice in?", "Any of the 150+ currencies your browser knows, set per client and per invoice. Totals on your dashboard are kept separate for each currency."],
+  ["Can I download invoices as PDF?", "Yes. Every invoice downloads as a PDF in one of four templates (Classic, Minimal, Bold or Compact) with your logo and brand colour. The preview you see while editing is the actual PDF."],
+  ["Do I need to install anything?", "No. Tallyo runs in your browser. If you prefer, you can deploy your own copy to Netlify or Vercel in a few minutes."],
+  ["What does the AI do with my data?", "The AI helpers are optional. When you use one, only the text you paste or the item you are editing is sent to the model, and the result fills the form for you to check. Nothing is saved until you save."],
+] as const;
+
+export const metadata = pageMetadata({
+  title: "Free Invoice Software for Freelancers | Tallyo",
+  description: SITE_DESCRIPTION,
+  path: "/",
+  absoluteTitle: true,
+});
+
 export default function Home() {
   return (
     <>
+      <JsonLd data={[organization, website, softwareApplication, faqPage(faqs)]} />
       <section className="mx-auto grid max-w-6xl items-center gap-14 px-4 pt-14 pb-20 sm:px-6 lg:grid-cols-[1fr_1.05fr] lg:pt-20 lg:pb-28">
         <div className="max-w-xl">
           <h1 className="text-[2.6rem] leading-[1.05] font-semibold tracking-[-0.03em] text-balance sm:text-6xl">
@@ -127,6 +145,18 @@ export default function Home() {
             ))}
           </dl>
         </div>
+      </section>
+
+      <section className="mx-auto grid max-w-6xl gap-10 px-4 pt-20 sm:px-6 lg:grid-cols-[1fr_1.6fr]" aria-labelledby="faq-heading">
+        <h2 id="faq-heading" className="max-w-xs text-3xl font-semibold tracking-tight text-balance">Questions people ask before switching</h2>
+        <dl className="divide-y divide-rule border-y border-rule">
+          {faqs.map(([q, a]) => (
+            <div key={q} className="py-5">
+              <dt className="font-semibold">{q}</dt>
+              <dd className="mt-1.5 leading-relaxed text-muted-foreground">{a}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">

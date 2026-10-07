@@ -15,6 +15,7 @@ export function SiteFooter() {
         <nav className="grid content-start gap-2 text-sm">
           <p className="font-medium">Product</p>
           <Link href="/features" className="text-muted-foreground hover:text-foreground">Features</Link>
+          <Link href="/invoice-templates" className="text-muted-foreground hover:text-foreground">Invoice templates</Link>
           <Link href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
           <Link href="/sign-up" className="text-muted-foreground hover:text-foreground">Create an account</Link>
         </nav>

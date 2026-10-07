@@ -1,8 +1,14 @@
+import { breadcrumbs, JsonLd } from "@/components/site/json-ld";
 import { PageIntro } from "@/components/site/page-intro";
 import { buttonVariants } from "@/components/ui/button";
-import { GITHUB_URL } from "@/lib/site";
+import { GITHUB_URL, pageMetadata } from "@/lib/site";
 
-export const metadata = { title: "Self-hosting" };
+export const metadata = pageMetadata({
+  title: "Self-host open-source invoicing software",
+  description:
+    "Run Tallyo on your own server. A step-by-step guide to deploying the open-source invoicing app with MongoDB on Netlify, Vercel or any Node.js host.",
+  path: "/open-source",
+});
 
 const steps: { title: string; text: string; code?: string }[] = [
   { title: "Get the code", text: "You need Node.js 20.9 or newer and pnpm.", code: `git clone ${GITHUB_URL}.git\ncd Tallyo\npnpm install` },
@@ -31,7 +37,8 @@ const stack = [
 export default function OpenSourcePage() {
   return (
     <>
-      <PageIntro title="Run Tallyo yourself">
+      <JsonLd data={breadcrumbs([["Self-hosting", "/open-source"]])} />
+      <PageIntro title="Self-host Tallyo, the open-source invoicing app">
         The full app is open source. Host it for your business or your clients, change anything you like, and send
         improvements back if you want to.
       </PageIntro>

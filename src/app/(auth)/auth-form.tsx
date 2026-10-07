@@ -41,7 +41,7 @@ export function AuthForm({ mode, providers }: { mode: "sign-in" | "sign-up"; pro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-xl">{isSignUp ? "Create your account" : "Welcome back"}</CardTitle>
+        <CardTitle className="text-xl"><h1>{isSignUp ? "Create your free Tallyo account" : "Sign in to Tallyo"}</h1></CardTitle>
         <CardDescription>{isSignUp ? "Start invoicing in a couple of minutes." : "Sign in to your Tallyo account."}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useLayoutEffect, useSyncExternalStore } from "react";
 import { THEME_COOKIE, parseTheme, type Theme } from "@/lib/theme-cookie";
 
 // The server renders the saved theme as a class on <html> (see app/layout.tsx), so no inline script is needed.
@@ -37,4 +37,17 @@ export function useTheme() {
     listeners.forEach((l) => l());
   }, []);
   return { theme, resolvedTheme, setTheme };
+}
+
+/**
+ * Applies a saved light/dark choice after load. The root layout no longer reads cookies, so marketing pages
+ * can be served as static files; people who follow their system theme (the default) see no change at all.
+ */
+export function ThemeSync() {
+  useLayoutEffect(() => {
+    const t = readTheme();
+    document.documentElement.classList.toggle("dark", t === "dark");
+    document.documentElement.classList.toggle("light", t === "light");
+  }, []);
+  return null;
 }

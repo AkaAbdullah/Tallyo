@@ -3,7 +3,7 @@ import { COUNTRIES, CURRENCIES_SORTED } from "@/lib/geo";
 import { requireUser } from "@/server/session";
 import { OnboardingForm } from "./onboarding-form";
 
-export const metadata = { title: "Set up your business" };
+export const metadata = { title: "Set up your business", robots: { index: false, follow: false } };
 
 export default async function OnboardingPage() {
   const { user } = await requireUser();

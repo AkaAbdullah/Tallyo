@@ -6,6 +6,8 @@ import { UserMenu } from "@/components/app/user-menu";
 import { WorkspaceSwitcher } from "@/components/app/workspace-switcher";
 import { requireWorkspace } from "@/server/session";
 
+export const metadata = { robots: { index: false, follow: false } };
+
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const { user, workspace, workspaces, business } = await requireWorkspace();
   const switcher = (

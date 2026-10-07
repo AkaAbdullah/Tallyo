@@ -24,24 +24,24 @@ export function InvoiceStack() {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-base font-semibold">Hollis &amp; Reed</p>
-            <p className="text-[#1e2026]/60">Design and development studio</p>
+            <p className="text-[#1e2026]/70">Design and development studio</p>
           </div>
           <div className="text-right">
             <p className="text-2xl font-light tracking-tight text-[#1e2026]/70">Invoice</p>
-            <p className="tabular text-[#1e2026]/60">INV-000142</p>
+            <p className="tabular text-[#1e2026]/70">INV-000142</p>
           </div>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-4 border-y border-[#1e2026]/10 py-4">
           <div>
-            <p className="text-[#1e2026]/50">Billed to</p>
+            <p className="text-[#1e2026]/70">Billed to</p>
             <p className="font-medium">Waldblick Energie GmbH</p>
-            <p className="text-[#1e2026]/60">VAT ID DE123456789</p>
+            <p className="text-[#1e2026]/70">VAT ID DE123456789</p>
           </div>
           <div className="text-right">
-            <p className="text-[#1e2026]/50">Due</p>
+            <p className="text-[#1e2026]/70">Due</p>
             <p className="font-medium">14 November 2026</p>
-            <p className="text-[#1e2026]/60">Net 14</p>
+            <p className="text-[#1e2026]/70">Net 14</p>
           </div>
         </div>
 
@@ -50,7 +50,7 @@ export function InvoiceStack() {
             <li key={i.title} className="flex justify-between gap-4 py-3">
               <div>
                 <p className="font-medium">{i.title}</p>
-                <p className="text-[#1e2026]/55">{i.detail}</p>
+                <p className="text-[#1e2026]/70">{i.detail}</p>
               </div>
               <p className="tabular shrink-0 font-medium">€{i.amount}</p>
             </li>
@@ -58,14 +58,14 @@ export function InvoiceStack() {
         </ul>
 
         <div className="mt-auto">
-          <div className="flex justify-between border-t border-[#1e2026]/10 pt-3 text-[#1e2026]/60">
+          <div className="flex justify-between border-t border-[#1e2026]/10 pt-3 text-[#1e2026]/70">
             <span>VAT 0%, reverse charge</span><span className="tabular">€0.00</span>
           </div>
           <div className="mt-2 flex items-baseline justify-between rounded-[3px] bg-[#3341a6] px-3 py-2.5 text-white">
             <span className="font-medium">Balance due</span>
             <span className="tabular text-lg font-semibold">€3,650.00</span>
           </div>
-          <p className="mt-3 text-[11.5px] leading-snug text-[#1e2026]/55">
+          <p className="mt-3 text-[11.5px] leading-snug text-[#1e2026]/70">
             Reverse charge: VAT payable by the recipient (Art. 196 Directive 2006/112/EC).
           </p>
         </div>

@@ -1,9 +1,16 @@
 import Link from "next/link";
+import { breadcrumbs, faqPage, JsonLd } from "@/components/site/json-ld";
 import { PageIntro } from "@/components/site/page-intro";
 import { buttonVariants } from "@/components/ui/button";
+import { pageMetadata } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export const metadata = { title: "Pricing" };
+export const metadata = pageMetadata({
+  title: "Pricing: free invoicing software, no limits",
+  description:
+    "Tallyo is free: unlimited invoices, clients, PDF downloads and team members. Use the hosted version or self-host the MIT-licensed code on your own server.",
+  path: "/pricing",
+});
 
 const lines = [
   ["Unlimited invoices", "Free"],
@@ -13,7 +20,7 @@ const lines = [
   ["Every future feature", "Free"],
 ];
 
-const faqs = [
+const faqs: [string, string][] = [
   ["Why is it free?", "Tallyo is an open-source project. It started as the tool one studio needed for its own invoicing, and it is shared so others can use and improve it."],
   ["What about the AI features?", "They use your own Groq API key, so any cost is between you and Groq. Groq offers a free tier that covers normal invoicing use."],
   ["Can I run it on my own server?", "Yes. The MIT license lets you run, change and redistribute it, including for commercial use."],
@@ -23,12 +30,13 @@ const faqs = [
 export default function PricingPage() {
   return (
     <>
-      <PageIntro title="Pricing">It costs nothing. That is the whole pricing page, but here it is properly itemised.</PageIntro>
+      <JsonLd data={[faqPage(faqs), breadcrumbs([["Pricing", "/pricing"]])]} />
+      <PageIntro title="Free invoice software, properly itemised">Tallyo costs nothing. That is the whole pricing page, but here it is on a receipt anyway.</PageIntro>
       <section className="mx-auto grid max-w-6xl gap-14 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_1fr] lg:items-start">
         <div className="mx-auto w-full max-w-md bg-[#fcefa4] p-7 text-[#1e2026] shadow-[0_12px_32px_-14px_rgba(30,32,38,.35)] sm:p-9">
           <div className="flex items-baseline justify-between">
             <p className="text-lg font-semibold">Tallyo</p>
-            <p className="text-sm text-[#1e2026]/60">Receipt</p>
+            <p className="text-sm text-[#1e2026]/75">Receipt</p>
           </div>
           <ul className="mt-6 divide-y divide-dashed divide-[#1e2026]/25 border-y border-dashed border-[#1e2026]/25">
             {lines.map(([item, price]) => (
@@ -42,7 +50,7 @@ export default function PricingPage() {
             <span className="font-semibold">Total due</span>
             <span className="tabular text-3xl font-semibold">$0.00</span>
           </div>
-          <p className="mt-6 text-sm text-[#1e2026]/65">Paid in full. Thank you for your business.</p>
+          <p className="mt-6 text-sm text-[#1e2026]/75">Paid in full. Thank you for your business.</p>
         </div>
         <div>
           <h2 className="text-2xl font-semibold tracking-tight">Two ways to use it</h2>
