@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, LoaderCircle, Plus, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { AiAssist } from "@/components/forms/ai-assist";
 import { Field } from "@/components/forms/field";
 import { LabelValueEditor } from "@/components/forms/label-value-editor";
 import { PdfPreview } from "@/components/invoice/pdf-preview";
@@ -12,10 +13,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { addDays, computeTotals, formatDate, formatMoney, lineAmount } from "@/lib/money";
-import { notePreset, TAX_MODES, type TaxMode } from "@/lib/tax";
+import { notePreset, suggestTax, TAX_MODES, type TaxMode } from "@/lib/tax";
 import { TEMPLATES, type TemplateId } from "@/pdf/registry";
 import type { DocBusiness } from "@/pdf/types";
 import type { ClientDTO, InvoiceDTO } from "@/server/dto";
+import { aiDraftItems, aiExtractClient, aiPolishItem } from "@/server/ai";
 import { saveInvoice } from "@/server/invoices";
 
 type Option = { code: string; name: string };
@@ -53,8 +55,9 @@ function Section({ title, children, action }: { title: string; children: React.R
 }
 
 export function InvoiceEditor({
-  invoice, business, clients, defaults, currencies, preselectClientId,
+  invoice, business, clients, defaults, currencies, preselectClientId, aiEnabled = false,
 }: {
+  aiEnabled?: boolean;
   invoice?: InvoiceDTO;
   business: DocBusiness & { country: string; invoiceTemplate: TemplateId };
   clients: ClientDTO[];
@@ -108,6 +111,41 @@ export function InvoiceEditor({
     setTax({ taxMode: c.taxMode, taxRate: String(c.taxRate), taxLabel: c.taxLabel, noteTitle: c.noteTitle, noteBody: c.noteBody });
   }
 
+  async function fillClientFromMessage(message: string) {
+    const res = await aiExtractClient(message);
+    if (!res.ok) return res.error;
+    const c = res.data;
+    if (!c.name && !c.address && !c.ids.length) return "No billing details found in that text.";
+    setClientId("");
+    setClient({ name: c.name, address: c.address, country: c.country, ids: c.ids });
+    setClientVersion((v) => v + 1);
+    if (c.currency && currencies.some((x) => x.code === c.currency)) setCurrency(c.currency);
+    if (c.country) {
+      const s = suggestTax(business.country, c.country);
+      setTax({ taxMode: s.taxMode, taxRate: String(s.taxRate), taxLabel: s.taxLabel, noteTitle: s.noteTitle, noteBody: s.noteBody });
+    }
+  }
+
+  async function draftFromDescription(description: string) {
+    const res = await aiDraftItems(description, currency);
+    if (!res.ok) return res.error;
+    if (!res.data.length) return "Couldn't find any work to invoice in that description.";
+    const drafted = res.data.map((i) => ({ title: i.title, ref: "", bulletsText: i.bullets.join("\n"), qty: String(i.qty), price: i.price ? String(i.price) : "" }));
+    // Replace the starting blank item; otherwise add below what is already there.
+    setItems((list) => [...list.filter((it) => it.title.trim() || it.price.trim() || it.bulletsText.trim()), ...drafted]);
+    toast.success(`Added ${drafted.length} line ${drafted.length === 1 ? "item" : "items"}. Check the wording and prices.`);
+  }
+
+  const [polishing, setPolishing] = useState<number | null>(null);
+  async function polish(i: number) {
+    const item = items[i];
+    setPolishing(i);
+    const res = await aiPolishItem(item.title, item.bulletsText.split("\n").filter((b) => b.trim()));
+    setPolishing(null);
+    if (!res.ok) return toast.error(res.error);
+    updateItem(i, { title: res.data.title || item.title, bulletsText: res.data.bullets.join("\n") });
+  }
+
   const updateItem = (i: number, patch: Partial<ItemDraft>) => setItems((list) => list.map((it, j) => (j === i ? { ...it, ...patch } : it)));
   const moveItem = (i: number, by: number) =>
     setItems((list) => {
@@ -151,6 +189,15 @@ export function InvoiceEditor({
           title="Bill to"
           action={<Link href="/clients/new" className="text-sm text-primary underline-offset-4 hover:underline">Add a new client</Link>}
         >
+          {aiEnabled && (
+            <AiAssist
+              trigger="Fill in from their email"
+              label="Paste the message with their billing details"
+              placeholder={"Please invoice our GmbH:\nWaldblick Energie GmbH\nMusterstraße 1, 10115 Berlin\nVAT ID DE123456789"}
+              action="Fill in the details"
+              onRun={fillClientFromMessage}
+            />
+          )}
           {clients.length > 0 && (
             <Field label="Saved client" htmlFor="clientId" hint="Fills in their details, currency and tax note.">
               <NativeSelect id="clientId" value={clientId} onChange={(e) => pickClient(e.target.value)}>
@@ -219,12 +266,27 @@ export function InvoiceEditor({
         </Section>
 
         <Section title="Line items">
+          {aiEnabled && (
+            <AiAssist
+              trigger="Draft items from a description"
+              label="Describe the work and the price in your own words"
+              placeholder="A website and a price calculator for Acme Ltd, plus CRM integration and German/French translation. 1,440 USD in total, most of it for the website."
+              action="Draft line items"
+              rows={4}
+              onRun={draftFromDescription}
+            />
+          )}
           {err("items") && <p className="text-sm text-destructive">{err("items")}</p>}
           {items.map((item, i) => (
             <div key={i} className="rounded-lg border border-rule p-4">
               <div className="mb-3 flex items-center gap-1">
                 <span className="flex-1 text-sm text-muted-foreground">Item {i + 1}</span>
                 <span className="mr-2 text-sm font-semibold">{formatMoney(lineAmount(lineItems[i]), currency)}</span>
+                {aiEnabled && (
+                  <Button type="button" variant="ghost" size="sm" disabled={polishing !== null || !item.title.trim()} onClick={() => polish(i)}>
+                    {polishing === i ? <LoaderCircle className="animate-spin" /> : <Sparkles className="text-carbon" />} Tidy wording
+                  </Button>
+                )}
                 <Button type="button" variant="ghost" size="icon-sm" aria-label="Move up" disabled={i === 0} onClick={() => moveItem(i, -1)}><ArrowUp /></Button>
                 <Button type="button" variant="ghost" size="icon-sm" aria-label="Move down" disabled={i === items.length - 1} onClick={() => moveItem(i, 1)}><ArrowDown /></Button>
                 <Button type="button" variant="ghost" size="icon-sm" aria-label="Remove item" disabled={items.length === 1} onClick={() => setItems((l) => l.filter((_, j) => j !== i))}><Trash2 /></Button>

@@ -4,6 +4,7 @@ import { FlashToast } from "@/components/app/flash-toast";
 import { PageHeader } from "@/components/app/page-header";
 import { InvoiceModel } from "@/models/invoice";
 import { invoiceDTO } from "@/server/dto";
+import { aiEnabled } from "@/lib/ai-tasks";
 import { InvoiceEditor } from "../../invoice-editor";
 import { loadEditorContext } from "../../editor-context";
 
@@ -25,7 +26,7 @@ export default async function EditInvoicePage({ params, searchParams }: PageProp
         title={`Edit ${invoice.number}`}
         description={invoice.status === "draft" ? "Draft. Only you and your team can see it." : "This invoice has already been sent. Changes update the copy in Tallyo, not the one your client has."}
       />
-      <InvoiceEditor invoice={invoiceDTO(invoice)} business={ctx.business} clients={ctx.clients} defaults={ctx.defaults} currencies={ctx.currencies} />
+      <InvoiceEditor invoice={invoiceDTO(invoice)} business={ctx.business} clients={ctx.clients} defaults={ctx.defaults} currencies={ctx.currencies} aiEnabled={aiEnabled()} />
     </>
   );
 }

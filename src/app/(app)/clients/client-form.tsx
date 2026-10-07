@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { AiAssist } from "@/components/forms/ai-assist";
 import { Field, FormSection } from "@/components/forms/field";
 import { LabelValueEditor } from "@/components/forms/label-value-editor";
 import { NativeSelect } from "@/components/native-select";
@@ -9,15 +10,17 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { notePreset, suggestTax, TAX_MODES, type TaxMode } from "@/lib/tax";
+import { aiExtractClient } from "@/server/ai";
 import { saveClient } from "@/server/clients";
 import type { ClientDTO } from "@/server/dto";
 
 type Option = { code: string; name: string };
 
 export function ClientForm({
-  client, sellerCountry, defaultCurrency, countries, currencies,
+  client, sellerCountry, defaultCurrency, countries, currencies, aiEnabled = false,
 }: {
   client?: ClientDTO;
+  aiEnabled?: boolean;
   sellerCountry: string;
   defaultCurrency: string;
   countries: Option[];
@@ -33,12 +36,34 @@ export function ClientForm({
   );
   // Until the user edits tax fields themselves, follow the suggestion for the chosen country.
   const [taxTouched, setTaxTouched] = useState(Boolean(client));
+  // Values the uncontrolled fields start from; bumping `fillVersion` remounts them after an AI fill.
+  const [prefill, setPrefill] = useState({
+    name: client?.name ?? "", address: client?.address ?? "", email: client?.email ?? "",
+    ids: client?.ids ?? [], currency: client?.currency ?? defaultCurrency,
+  });
+  const [fillVersion, setFillVersion] = useState(0);
   const countryName = countries.find((c) => c.code === country)?.name;
   const suggestion = country ? suggestTax(sellerCountry, country) : null;
 
   function onCountry(code: string) {
     setCountry(code);
     if (!taxTouched) setTax(suggestTax(sellerCountry, code));
+  }
+
+  async function fillFromMessage(message: string) {
+    const res = await aiExtractClient(message);
+    if (!res.ok) return res.error;
+    const c = res.data;
+    if (!c.name && !c.address && !c.ids.length) return "No billing details found in that text.";
+    setPrefill((p) => ({
+      name: c.name || p.name,
+      address: c.address || p.address,
+      email: c.email || p.email,
+      ids: c.ids.length ? c.ids : p.ids,
+      currency: c.currency && currencies.some((x) => x.code === c.currency) ? c.currency : p.currency,
+    }));
+    setFillVersion((v) => v + 1);
+    if (c.country && countries.some((x) => x.code === c.country)) onCountry(c.country);
   }
 
   function onMode(mode: TaxMode) {
@@ -50,11 +75,20 @@ export function ClientForm({
     <form action={action}>
       {client && <input type="hidden" name="id" value={client.id} />}
       <FormSection title="Company" description="As it should appear under Bill to.">
+        {aiEnabled && (
+          <AiAssist
+            trigger="Fill in from their email"
+            label="Paste the message with their billing details"
+            placeholder={"Please invoice our GmbH:\nWaldblick Energie GmbH\nMusterstraße 1, 10115 Berlin\nVAT ID DE123456789"}
+            action="Fill in the details"
+            onRun={fillFromMessage}
+          />
+        )}
         <Field label="Company or person" htmlFor="name" error={err.name}>
-          <Input id="name" name="name" defaultValue={client?.name} required autoFocus={!client} />
+          <Input key={`name-${fillVersion}`} id="name" name="name" defaultValue={prefill.name} required autoFocus={!client && !aiEnabled} />
         </Field>
         <Field label="Address" htmlFor="address" hint="Street, postcode and city, one per line.">
-          <Textarea id="address" name="address" defaultValue={client?.address} rows={3} />
+          <Textarea key={`address-${fillVersion}`} id="address" name="address" defaultValue={prefill.address} rows={3} />
         </Field>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Country" htmlFor="country">
@@ -64,13 +98,14 @@ export function ClientForm({
             </NativeSelect>
           </Field>
           <Field label="Billing email" htmlFor="email" error={err.email} hint="For your reference. Not printed.">
-            <Input id="email" name="email" type="email" defaultValue={client?.email} />
+            <Input key={`email-${fillVersion}`} id="email" name="email" type="email" defaultValue={prefill.email} />
           </Field>
         </div>
         <Field label="Registration and VAT numbers">
           <LabelValueEditor
+            key={`ids-${fillVersion}`}
             name="ids"
-            defaultValue={client?.ids ?? []}
+            defaultValue={prefill.ids}
             labelPlaceholder="Name, e.g. VAT ID"
             valuePlaceholder="Number"
             addLabel="Add a number"
@@ -81,7 +116,7 @@ export function ClientForm({
 
       <FormSection title="Billing" description="Used every time you invoice this client. You can still change it per invoice.">
         <Field label="Currency" htmlFor="currency" className="sm:max-w-xs">
-          <NativeSelect id="currency" name="currency" defaultValue={client?.currency ?? defaultCurrency}>
+          <NativeSelect key={`currency-${fillVersion}`} id="currency" name="currency" defaultValue={prefill.currency}>
             {currencies.map((c) => <option key={c.code} value={c.code}>{c.code}, {c.name}</option>)}
           </NativeSelect>
         </Field>

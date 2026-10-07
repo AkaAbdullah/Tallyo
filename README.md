@@ -4,7 +4,7 @@ Open-source invoicing for freelancers and small businesses, with AI that does th
 
 **Live site:** [tallyo-dev.netlify.app](https://tallyo-dev.netlify.app)
 
-> **Status:** early development. Accounts, workspaces, business settings, clients, invoices, PDF download and invoice templates work. The AI helpers are next.
+> **Status:** early development, but the whole invoicing flow works: accounts, workspaces, settings, clients, invoices, PDF templates and the AI helpers.
 
 ## Features
 
@@ -13,7 +13,7 @@ Open-source invoicing for freelancers and small businesses, with AI that does th
 - **Clients**: saved addresses, VAT numbers, currency and a tax treatment suggested from their country.
 - **Invoices**: auto-numbering, any currency, reverse-charge and export notes, partial payments, overdue tracking.
 - **PDFs and templates**: four templates (Classic, Minimal, Bold, Compact) with your logo and brand colour. The live preview is the actual PDF, generated in the browser.
-- **AI helpers** *(planned, via Groq)*: turn a client's message into a client record, draft line items from a description, and tidy up wording.
+- **AI helpers** *(optional, via Groq)*: paste a client's email to fill in their company, address and VAT number; describe the work to draft line items; tidy the wording of an item. Results fill the form for you to check, and nothing is saved until you save. Without a `GROQ_API_KEY` the buttons don't appear.
 
 ## Tech stack
 

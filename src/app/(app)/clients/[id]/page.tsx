@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/app/page-header";
 import { COUNTRIES, CURRENCIES_SORTED } from "@/lib/geo";
 import { ClientModel } from "@/models/client";
 import { clientDTO } from "@/server/dto";
+import { aiEnabled } from "@/lib/ai-tasks";
 import { requireWorkspace } from "@/server/session";
 import { ClientForm } from "../client-form";
 import { DeleteClientButton } from "./delete-client-button";
@@ -25,7 +26,7 @@ export default async function EditClientPage({ params }: PageProps<"/clients/[id
           <Link href={`/invoices/new?client=${id}`} className={buttonVariants({ size: "lg" })}>New invoice</Link>
         </div>
       </PageHeader>
-      <ClientForm client={clientDTO(client)} sellerCountry={business.country} defaultCurrency={business.defaultCurrency} countries={COUNTRIES} currencies={CURRENCIES_SORTED} />
+      <ClientForm client={clientDTO(client)} sellerCountry={business.country} defaultCurrency={business.defaultCurrency} countries={COUNTRIES} currencies={CURRENCIES_SORTED} aiEnabled={aiEnabled()} />
     </>
   );
 }
